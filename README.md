@@ -6,8 +6,8 @@ House Blend is a project template to help you hit the ground running when making
 
 ## Hitting the Ground Running
 
-1. `git clone git://github.com/Osmose/house-blend.git`
-2. Open `js/game/game.js` in your favorite code editor.
+1. `git clone --recursive git://github.com/Osmose/house-blend.git game_name`
+2. Open `game_name/js/game/game.js` in your favorite code editor.
 3. There is no step 3.
 
 # License
