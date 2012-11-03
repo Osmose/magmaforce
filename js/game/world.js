@@ -165,22 +165,20 @@ define(function(require) {
                 }
             }
         } else if (this.tickcount > 360 && !this.gameOver) {
-            //this.generateRow();
+            this.generateRow();
             this.tickcount = 0;
         } else if (this.show_match_count <= 0) { // check if we should dump more rows on them
-            // Check how many rows are on the field
-            /*var dumpMore = true;
-            while(dumpMore) {
-                for(var i=0; i<this.cols; i++) {
-                    if (this.balls[2][i] != 0) {
-                        dumpMore = false;
-                        break;
-                    }
+            var ballcount = 0;
+            // Check how many balls are on the field
+            for(var i=0; i<this.rows; i++) {
+                for (var j=0; j<this.cols; j++) {
+                    if (this.balls[i][j] > 0)
+                        ballcount++;
                 }
-                if (dumpMore) {
-                    this.generateRow();
-                }
-            }*/
+            }
+            if (ballcount < 2.5*this.cols) {
+                this.generateRow();
+            }
         }
     };
 
