@@ -59,18 +59,22 @@ define(function(require) {
         this.checkGameOver();
     };
 
-    BallWorld.prototype.getBlocks = function(col) {
+    BallWorld.prototype.getBlocks = function(col, color) {
+        if (typeof color == 'undefined') {
+            color = 0;
+        }
+
         var ret = [];
         // From the bottom of the column, get all of the same color
         var lastGrabbed = 0;
-        var color = 0;
         for(var i=this.rows-1; i>=0; i--) {
             // Skip past empty rows
             if (this.balls[i][col] == 0) {
                 continue;
             }
 
-            if (lastGrabbed == 0 || lastGrabbed == this.balls[i][col]) {
+            if ((lastGrabbed == 0 || lastGrabbed == this.balls[i][col]) && // Must match what we've been picking
+               (color == 0 || color == this.balls[i][col])) { // must match what the player already holds
                 // If the first color grabbed is white, bail out.
                 if (lastGrabbed === 0 && this.balls[i][col] === 5) break;
 
