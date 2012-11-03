@@ -3,8 +3,49 @@
   <head>
     <meta charset="utf-8">
     <title>House Blend</title>
+    <link href="css/bootstrap.cyborg.min.css" rel="stylesheet" media="screen">
+    <link href="css/magmaforce.css" rel="stylesheet" media="screen">
   </head>
-  <body id="game">
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="span12">
+          <nav class="navbar">
+            <div class="navbar-inner">
+              <a href="#" class="brand">Magma Force</a>
+            </div>
+          </nav>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <div class="well">
+            <div id="game"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span6 offset3">
+          <table class="table">
+            <tr><th>Control</th><th>Key</th></tr>
+            <tr><td>Movement</td><td>Left, Right</td></tr>
+            <tr><td>Grab Magma Ball</td><td>D</td></tr>
+            <tr><td>Throw Magma Balls</td><td>F</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span6 offset3">
+          <h2>How To Play</h2>
+          <ul>
+            <li>Use the Magma Extractor to collect Magma Balls from the screen! You can collect more than one Magma Ball at a time by grabbing balls while already holding magma.</li>
+            <li>Release the Magma Balls you've collected. Form columns of three or more to cause a chain reaction and destroy all adjacent Magma Balls!</li>
+            <li>Try to clear the screen before you are crushed by the Magma Balls!</li>
+            <li>Volatile Magma Balls are marked with special symbols. If you destroy one of these, all balls of the same color will disappear from the screen!</li>
+            <li>Set up combos for bonus points!</li>
+          </ul>
+        </div>
+    </div>
     <script>
       var require = {
         baseUrl: 'js',
