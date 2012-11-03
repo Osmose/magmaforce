@@ -43,7 +43,7 @@ define(function(require) {
         if (this.keydown_delay <= 0) {
             this.col += dx;
             this.col = this.col % this.engine.cols;
-            this.x = this.col * 8;
+            this.x = this.col * 16;
 
             if (!this.keyheld) {
                 this.keydown_delay = 16;
@@ -63,7 +63,7 @@ define(function(require) {
 
     Player.prototype.render = function(ctx) {
         ctx.fillStyle = '#FFF';
-        ctx.fillRect(this.x, this.y, 8, 8);
+        ctx.fillRect(this.x, this.y, 16, 16);
     };
 
     return Player;

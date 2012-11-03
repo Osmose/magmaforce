@@ -7,17 +7,23 @@ define(function(require) {
     var Player = require('game/player');
     var BallWorld = require('game/world');
 
-    // Initialize engine.
-    var COLS = 12;
-    var ROWS = 12;
-    var engine = new Engine(COLS * 8, ROWS * 8, 4, new BallWorld(ROWS,COLS));
-    engine.bg_color = '#000';
-    engine.cols = COLS;
-    engine.rows = ROWS;
+    var loader = require('game/loader');
+    loader.register('balls','img/balls.png', 'image');
 
-    engine.addEntity(new Player(0, 11 * 8));
+    loader.loadAll().done(function() {
+        // Initialize engine.
+        var COLS = 12;
+        var ROWS = 12;
+        var engine = new Engine(COLS * 16, ROWS * 16, 3, new BallWorld(ROWS,COLS));
+        engine.bg_color = '#000';
+        engine.cols = COLS;
+        engine.rows = ROWS;
 
-    // Append canvas to screen and start the engine!
-    document.querySelector('#game').appendChild(engine.canvas);
-    engine.start();
+        engine.addEntity(new Player(0, 11 * 16));
+
+        // Append canvas to screen and start the engine!
+        document.querySelector('#game').appendChild(engine.canvas);
+        engine.start();
+    })
+
 });

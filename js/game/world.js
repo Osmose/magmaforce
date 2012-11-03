@@ -1,5 +1,8 @@
 define(function(require) {
     var DefaultWorld = require('flux/worlds/default');
+    var TiledGraphic = require('flux/graphics/tiled');
+
+    var loader = require('game/loader');
 
     function BallWorld(rows, cols) {
         DefaultWorld.call(this);
@@ -9,6 +12,8 @@ define(function(require) {
 
         this.gameOver = false;
         this.colors = ['empty','red','green','yellow','blue','white'];
+
+        this.balltiles = new TiledGraphic(loader.get('balls'),16,16);
 
         this.balls = [];
         for(var i=0;i<this.rows;i++) {
@@ -52,7 +57,6 @@ define(function(require) {
             if (this.balls[i][col] == 0) {
                 continue;
             }
-            console.log(this.balls[i][col]);
 
             if (lastGrabbed == 0 || lastGrabbed == this.balls[i][col]) {
                 // If the first color grabbed is white, bail out.
@@ -126,8 +130,7 @@ define(function(require) {
         for (var i=0; i<this.rows; i++) {
             for (var j=0;j<this.cols; j++) {
                 if (this.balls[i][j] > 0) {
-                    ctx.fillStyle = this.colors[this.balls[i][j]];
-                    ctx.fillRect(j*8+1,i*8+1, 6, 6);
+                    this.balltiles.renderTile(ctx, this.balls[i][j]-1, j*16,i*16);
                 }
             }
         }
