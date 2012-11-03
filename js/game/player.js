@@ -4,6 +4,9 @@ define(function(require) {
     function Player(x, y) {
         Entity.call(this, x, y);
         this.col = 0;
+
+        this.keydown_delay = 0;
+        this.keyheld = false;
     }
     Player.prototype = Object.create(Entity.prototype);
 
@@ -19,9 +22,26 @@ define(function(require) {
             dx -= 1;
         }
 
-        this.col += dx;
-        this.col = this.col % this.engine.cols;
-        this.x = this.col * 8;
+        var keydown = kb.check(kb.LEFT) || kb.check(kb.RIGHT);
+        if (this.keydown_delay <= 0) {
+            this.col += dx;
+            this.col = this.col % this.engine.cols;
+            this.x = this.col * 8;
+
+            if (!this.keyheld) {
+                this.keydown_delay = 16;
+            } else {
+                this.keydown_delay =  7;
+            }
+        }
+
+        if (!keydown) {
+            this.keyheld = false;
+            this.keydown_delay = 0;
+        } else {
+            this.keyheld = true;
+            this.keydown_delay--;
+        }
     };
 
     Player.prototype.render = function(ctx) {
