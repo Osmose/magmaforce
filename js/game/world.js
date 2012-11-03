@@ -4,6 +4,8 @@ define(function(require) {
 
     var loader = require('game/loader');
 
+    var SHOW_MATCH_LENGTH = 32;
+
     function BallWorld(rows, cols) {
         DefaultWorld.call(this);
 
@@ -102,7 +104,7 @@ define(function(require) {
 
         var matches = this.resolveColumn(col);
         if (matches) {
-            this.show_match_count = 32;
+            this.show_match_count = SHOW_MATCH_LENGTH;
         }
 
         this.checkGameOver();
@@ -124,8 +126,17 @@ define(function(require) {
                     }
                 }
 
+                var affected = {};
                 for (var k = 0; k < this.cols; k++) {
-                    this.applyGravity(k);
+                    affected[k] = this.applyGravity(k);
+                }
+
+                for (var k = 0; k < this.cols; k++) {
+                    if (affected[k]) {
+                        if (this.resolveColumn(k)) {
+                            this.show_match_count = SHOW_MATCH_LENGTH;
+                        }
+                    }
                 }
             }
         } else if (this.tickcount > 360 && !this.gameOver) {
@@ -195,17 +206,21 @@ define(function(require) {
 
     BallWorld.prototype.applyGravity = function(col) {
         var lastFilled = -1;
+        var affected = false;
         for (var row = 0; row < this.rows; row++) {
             if (this.balls[row][col]) {
                 if (lastFilled === row - 1) {
                     lastFilled = row;
                 } else {
+                    affected = true;
                     lastFilled++;
                     this.balls[lastFilled][col] = this.balls[row][col];
                     this.balls[row][col] = 0;
                 }
             }
         }
+
+        return affected;
     };
 
     return BallWorld;
