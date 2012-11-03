@@ -96,10 +96,10 @@ define(function(require) {
                 continue;
             }
 
-            if ((lastGrabbed == 0 || (lastGrabbed-2)%4 == (this.balls[i][col]-2)%4) && // Must match what we've been picking
-               (color == 0 || (color-2)%4 == (this.balls[i][col]-2)%4)) { // must match what the player already holds
-                // If the first color grabbed is white, bail out.
-                if (lastGrabbed === 0 && this.balls[i][col] === 1) break;
+            if ((lastGrabbed == 0 || lastGrabbed == this.balls[i][col]) && // Must match what we've been picking
+               (color == 0 || color == this.balls[i][col])) { // must match what the player already holds
+                // If the first color grabbed is white, or special, bail out.
+                if ((lastGrabbed === 0 && this.balls[i][col] === 1) || this.balls[i][col]>5) break;
 
                 lastGrabbed = this.balls[i][col];
                 ret.push(lastGrabbed);
