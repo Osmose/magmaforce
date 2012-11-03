@@ -9,7 +9,7 @@ define(function(require) {
         this.keyheld = false;
         this.heldblocks = [];
 
-        this.grabflag = 0;
+        this.grabkey = true;
     }
     Player.prototype = Object.create(Entity.prototype);
 
@@ -25,17 +25,17 @@ define(function(require) {
             dx += this.engine.cols - 1;
         }
 
-        if (kb.check(kb.D) && this.grabflag === 0) {
-            this.grabflag = 16;
+        if (kb.check(kb.D) && !this.grabkey) {
+            this.grabkey = true;
             if (this.heldblocks.length === 0) {
                 this.heldblocks = this.engine.world.getBlocks(this.col);
             } else {
                 this.engine.world.pushBlocks(this.heldblocks, this.col);
                 this.heldblocks = [];
             }
-        } else {
-            if (this.grabflag > 0)
-                this.grabflag--;
+        }
+        if (!kb.check(kb.D)){
+            this.grabkey = false;
         }
 
 

@@ -16,7 +16,8 @@ define(function(require) {
         this.balltiles = new TiledGraphic(loader.get('balls'),16,16);
 
         this.balls = [];
-        for(var i=0;i<this.rows;i++) {
+        // there are an extra 2 undisplayed rows
+        for(var i=0;i<this.rows+2;i++) {
             this.balls[i] = [];
             for(var j=0;j<this.cols;j++) {
                 this.balls[i][j] = 0;
@@ -33,6 +34,16 @@ define(function(require) {
 
     BallWorld.prototype = Object.create(DefaultWorld.prototype);
 
+    BallWorld.prototype.checkGameOver = function() {
+        for (var i=0;i<this.cols; i++) {
+            if (this.balls[this.rows][i] === 0 || this.balls[this.rows][i]===5) {
+                continue;
+            }
+            this.gameOver = true;
+            break;
+        }
+    }
+
     BallWorld.prototype.generateRow = function() {
         var newRow = [];
         for (var i=0;i<this.cols;i++) {
@@ -45,6 +56,7 @@ define(function(require) {
         }
         this.balls.unshift(newRow);
         this.balls.pop();
+        this.checkGameOver();
     };
 
     BallWorld.prototype.getBlocks = function(col) {
@@ -82,10 +94,8 @@ define(function(require) {
         }
 
         for (var i=0;i<blocks.length; i++) {
-            if (bottomRow+i >= this.rows) {
-                console.log("you lost");
-                this.gameOver = true;
-                return;
+            if (bottomRow+i >= this.balls.length) {
+                break; // can't add blocks outside of row
             }
             this.balls[bottomRow+i][col] = blocks[i];
         }
@@ -94,6 +104,8 @@ define(function(require) {
         if (matches) {
             this.show_match_count = 32;
         }
+
+        this.checkGameOver();
     }
 
     BallWorld.prototype.tick = function() {
@@ -143,7 +155,7 @@ define(function(require) {
     };
 
     BallWorld.prototype.resolveColumn = function(col) {
-        var row = this.rows - 1;
+        var row = this.balls.length - 1;
         while (row >= 0 && this.balls[row][col] === 0) {
             row--;
         }
