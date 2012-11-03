@@ -16,7 +16,7 @@ define(function(require) {
             dx += 1;
         }
         if (kb.check(kb.LEFT)) {
-            dx -= 1;
+            dx += this.engine.cols - 1;
         }
 
         this.col += dx;
