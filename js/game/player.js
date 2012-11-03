@@ -10,6 +10,7 @@ define(function(require) {
         this.heldblocks = [];
 
         this.grabkey = true;
+        this.throwkey = true;
     }
     Player.prototype = Object.create(Entity.prototype);
 
@@ -28,15 +29,30 @@ define(function(require) {
         if (kb.check(kb.D) && !this.grabkey) {
             this.grabkey = true;
             if (this.heldblocks.length === 0) {
-                this.heldblocks = this.engine.world.getBlocks(this.col);
+                var addblocks = this.engine.world.getBlocks(this.col);
+                this.heldblocks = this.heldblocks.concat(addblocks);
             } else {
-                this.engine.world.pushBlocks(this.heldblocks, this.col);
-                this.heldblocks = [];
+                // Let them pick up more of the same color if they want
+                var addblocks = this.engine.world.getBlocks(this.col, this.heldblocks[0]);
+                this.heldblocks = this.heldblocks.concat(addblocks);
             }
         }
         if (!kb.check(kb.D)){
             this.grabkey = false;
         }
+
+        if (kb.check(kb.F) && !this.throwkey) {
+            this.throwkey = true;
+            if (this.heldblocks.length > 0) {
+                this.engine.world.pushBlocks(this.heldblocks, this.col);
+                this.heldblocks = [];
+            }
+        }
+        if (!kb.check(kb.F)) {
+            this.throwkey = false;
+        }
+
+
 
 
         var keydown = kb.check(kb.LEFT) || kb.check(kb.RIGHT);
