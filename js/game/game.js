@@ -5,11 +5,12 @@ define(function(require) {
     var Loader = require('flux/resources/loader');
 
     var Player = require('game/player');
+    var BallWorld = require('game/world');
 
         // Initialize engine.
         var COLS = 12;
         var ROWS = 12;
-        var engine = new Engine(COLS * 8, ROWS * 8, 3);
+        var engine = new Engine(COLS * 8, ROWS * 8, 3, new BallWorld(ROWS,COLS));
         engine.bg_color = '#000';
         engine.cols = COLS;
         engine.rows = ROWS;
