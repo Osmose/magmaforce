@@ -25,16 +25,16 @@ define(function(require) {
             dx += this.engine.cols - 1;
         }
 
-        if (kb.check(kb.D) && this.grabflag==0) {
+        if (kb.check(kb.D) && this.grabflag === 0) {
             this.grabflag = 16;
-            if (this.heldblocks.length == 0) {
+            if (this.heldblocks.length === 0) {
                 this.heldblocks = this.engine.world.getBlocks(this.col);
             } else {
                 this.engine.world.pushBlocks(this.heldblocks, this.col);
                 this.heldblocks = [];
             }
         } else {
-            if (this.grabflag>0)
+            if (this.grabflag > 0)
                 this.grabflag--;
         }
 

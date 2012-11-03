@@ -8,7 +8,7 @@ define(function(require) {
         this.cols = cols;
 
         this.gameOver = false;
-        this.colors = ['empty','red','green','yellow','blue'];
+        this.colors = ['empty','red','green','yellow','blue','white'];
 
         this.balls = [];
         for(var i=0;i<this.rows;i++) {
@@ -19,6 +19,7 @@ define(function(require) {
         }
 
         this.tickcount = 0;
+        this.show_match_count = 0;
 
         for (var k = 0; k < 3; k++) {
             this.generateRow();
@@ -45,6 +46,7 @@ define(function(require) {
         var ret = [];
         // From the bottom of the column, get all of the same color
         var lastGrabbed = 0;
+        var color = 0;
         for(var i=this.rows-1; i>=0; i--) {
             // Skip past empty rows
             if (this.balls[i][col] == 0) {
@@ -53,6 +55,9 @@ define(function(require) {
             console.log(this.balls[i][col]);
 
             if (lastGrabbed == 0 || lastGrabbed == this.balls[i][col]) {
+                // If the first color grabbed is white, bail out.
+                if (lastGrabbed === 0 && this.balls[i][col] === 5) break;
+
                 lastGrabbed = this.balls[i][col];
                 ret.push(lastGrabbed);
                 this.balls[i][col] = 0;
@@ -81,9 +86,9 @@ define(function(require) {
             this.balls[bottomRow+i][col] = blocks[i];
         }
 
-        this.resolveColumn(col);
-        for (var k = 0; k < this.cols; k++) {
-            this.applyGravity(k);
+        var matches = this.resolveColumn(col);
+        if (matches) {
+            this.show_match_count = 32;
         }
     }
 
@@ -91,7 +96,23 @@ define(function(require) {
         DefaultWorld.prototype.tick.call(this);
 
         this.tickcount++;
-        if (this.tickcount > 360 && !this.gameOver) {
+        if (this.show_match_count > 0) {
+            this.show_match_count--;
+            if (this.show_match_count <= 0) {
+                // Clear out white tiles
+                for(var i=0;i<this.rows;i++) {
+                    for(var j=0;j<this.cols;j++) {
+                        if (this.balls[i][j] == 5) {
+                            this.balls[i][j] = 0;
+                        }
+                    }
+                }
+
+                for (var k = 0; k < this.cols; k++) {
+                    this.applyGravity(k);
+                }
+            }
+        } else if (this.tickcount > 360 && !this.gameOver) {
             this.generateRow();
             this.tickcount = 0;
         }
@@ -126,33 +147,35 @@ define(function(require) {
 
         // Must be at least 3 in this column.
         if (row < 2) {
-            return;
+            return null;
         }
 
         // Check for at least 3 of the same color.
         var color = this.balls[row][col];
         if (this.balls[row-1][col] != color || this.balls[row-2][col] != color) {
-            return;
+            return null;
         }
 
-        var matches = [[row, col]];
-        while (matches.length > 0) {
-            var current = matches.pop();
-            this.balls[current[0]][current[1]] = 0;
+        var curmatches = [[row, col]];
+        while (curmatches.length > 0) {
+            var current = curmatches.pop();
+            this.balls[current[0]][current[1]] = 5;
 
             if (current[0] + 1 < this.rows && this.balls[current[0] + 1][current[1]] === color) {
-                matches.push([current[0] + 1, current[1]]);
+                curmatches.push([current[0] + 1, current[1]]);
             }
             if (current[0] - 1 >= 0 && this.balls[current[0] - 1][current[1]] === color) {
-                matches.push([current[0] - 1, current[1]]);
+                curmatches.push([current[0] - 1, current[1]]);
             }
             if (current[1] + 1 < this.cols && this.balls[current[0]][current[1] + 1] === color) {
-                matches.push([current[0], current[1] + 1]);
+                curmatches.push([current[0], current[1] + 1]);
             }
             if (current[1] - 1 >= 0 && this.balls[current[0]][current[1] - 1] === color) {
-                matches.push([current[0], current[1] - 1]);
+                curmatches.push([current[0], current[1] - 1]);
             }
         }
+
+        return true;
     };
 
     BallWorld.prototype.applyGravity = function(col) {
