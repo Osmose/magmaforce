@@ -64,6 +64,17 @@ define(function(require) {
     Player.prototype.render = function(ctx) {
         ctx.fillStyle = '#FFF';
         ctx.fillRect(this.x, this.y, 16, 16);
+
+        var world = this.engine.world;
+        var x = this.x + 7;
+
+        for (var row = this.engine.rows - 2; row >= 0; row--) {
+            if (world.balls[row][this.col] !== 0) break;
+
+            var y = row * 16;
+            ctx.fillRect(this.x + 7, y + 3, 2, 2);
+            ctx.fillRect(this.x + 7, y + 11, 2, 2);
+        }
     };
 
     return Player;
