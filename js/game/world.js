@@ -13,9 +13,10 @@ define(function(require) {
         this.cols = cols;
 
         this.gameOver = false;
-        this.colors = ['empty','red','green','yellow','blue','white'];
+        this.colors = ['empty','white','red','green','yellow','blue','red-special','green-special','yellow-special','blue-special'];
 
         this.balltiles = new TiledGraphic(loader.get('balls'),16,16);
+        this.nonspecialrows = 0;
 
         this.balls = [];
         // there are an extra 2 undisplayed rows
@@ -38,7 +39,7 @@ define(function(require) {
 
     BallWorld.prototype.checkGameOver = function() {
         for (var i=0;i<this.cols; i++) {
-            if (this.balls[this.rows][i] === 0 || this.balls[this.rows][i]===5) {
+            if (this.balls[this.rows][i] === 0 || this.balls[this.rows][i]===1) {
                 continue;
             }
             this.gameOver = true;
@@ -50,12 +51,32 @@ define(function(require) {
         var newRow = [];
         for (var i=0;i<this.cols;i++) {
             var prob = Math.random() * 10;
-            if (prob > 8) {
+            if (prob > 9 && this.balls[0][i]>=2) {
                 newRow[i] = this.balls[0][i];
             } else {
-                newRow[i] = Math.floor(Math.random()*4) + 1;
+                newRow[i] = Math.floor(Math.random()*4) + 2;
             }
         }
+
+        // Some probability to upgrade a ball ot a special ball
+        for (var i=0;i<this.cols; i++) {
+            var prob = Math.random();
+            if (prob>0.9825) {
+                if (newRow[i] >=2 && newRow[i] <=5) {
+                    newRow[i] += 4;
+                    this.nonspecialrows = 0;
+                }
+            }
+        }
+
+        // if it's been 9 rows without a special ball, make one
+        if (this.nonspecialrows > 10) {
+            newRow[Math.random() * this.cols] +=4;
+            this.nonspecialrows = 0;
+        }
+
+        this.nonspecialrows += 1;
+
         this.balls.unshift(newRow);
         this.balls.pop();
         this.checkGameOver();
@@ -75,10 +96,10 @@ define(function(require) {
                 continue;
             }
 
-            if ((lastGrabbed == 0 || lastGrabbed == this.balls[i][col]) && // Must match what we've been picking
-               (color == 0 || color == this.balls[i][col])) { // must match what the player already holds
+            if ((lastGrabbed == 0 || (lastGrabbed-2)%4 == (this.balls[i][col]-2)%4) && // Must match what we've been picking
+               (color == 0 || (color-2)%4 == (this.balls[i][col]-2)%4)) { // must match what the player already holds
                 // If the first color grabbed is white, bail out.
-                if (lastGrabbed === 0 && this.balls[i][col] === 5) break;
+                if (lastGrabbed === 0 && this.balls[i][col] === 1) break;
 
                 lastGrabbed = this.balls[i][col];
                 ret.push(lastGrabbed);
@@ -124,7 +145,7 @@ define(function(require) {
                 // Clear out white tiles
                 for(var i=0;i<this.rows;i++) {
                     for(var j=0;j<this.cols;j++) {
-                        if (this.balls[i][j] == 5) {
+                        if (this.balls[i][j] == 1) {
                             this.balls[i][j] = 0;
                         }
                     }
@@ -144,8 +165,22 @@ define(function(require) {
                 }
             }
         } else if (this.tickcount > 360 && !this.gameOver) {
-            this.generateRow();
+            //this.generateRow();
             this.tickcount = 0;
+        } else if (this.show_match_count <= 0) { // check if we should dump more rows on them
+            // Check how many rows are on the field
+            /*var dumpMore = true;
+            while(dumpMore) {
+                for(var i=0; i<this.cols; i++) {
+                    if (this.balls[2][i] != 0) {
+                        dumpMore = false;
+                        break;
+                    }
+                }
+                if (dumpMore) {
+                    this.generateRow();
+                }
+            }*/
         }
     };
 
@@ -157,7 +192,7 @@ define(function(require) {
         for (var i=0; i<this.rows; i++) {
             for (var j=0;j<this.cols; j++) {
                 if (this.balls[i][j] > 0) {
-                    this.balltiles.renderTile(ctx, this.balls[i][j]-1, j*16,i*16);
+                    this.balltiles.renderTile(ctx, this.balls[i][j], j*16,i*16);
                 }
             }
         }
@@ -177,34 +212,50 @@ define(function(require) {
 
         // Must be at least 3 in this column.
         if (row < 2) {
-            return null;
+            return false;
         }
 
         // Check for at least 3 of the same color.
         var color = this.balls[row][col];
-        if (this.balls[row-1][col] != color || this.balls[row-2][col] != color) {
-            return null;
+        if ((this.balls[row-1][col]-2)%4 != (color-2)%4 || (this.balls[row-2][col]-2)%4 != (color-2)%4) {
+            return false;
         }
 
+        var clearall = false;
         var curmatches = [[row, col]];
         while (curmatches.length > 0) {
             var current = curmatches.pop();
-            this.balls[current[0]][current[1]] = 5;
+            // Is it a special ball?
+            if (this.balls[current[0]][current[1]] > 5) {
+                clearall = true;
+                break;
+            }
+            this.balls[current[0]][current[1]] = 1; // turn it white
 
-            if (current[0] + 1 < this.rows && this.balls[current[0] + 1][current[1]] === color) {
+            if (current[0] + 1 < this.rows && (this.balls[current[0] + 1][current[1]]-2)%4 === (color-2)%4) {
                 curmatches.push([current[0] + 1, current[1]]);
             }
-            if (current[0] - 1 >= 0 && this.balls[current[0] - 1][current[1]] === color) {
+            if (current[0] - 1 >= 0 && (this.balls[current[0] - 1][current[1]]-2)%4 === (color-2)%4) {
                 curmatches.push([current[0] - 1, current[1]]);
             }
-            if (current[1] + 1 < this.cols && this.balls[current[0]][current[1] + 1] === color) {
+            if (current[1] + 1 < this.cols && (this.balls[current[0]][current[1] + 1]-2)%4 === (color-2)%4) {
                 curmatches.push([current[0], current[1] + 1]);
             }
-            if (current[1] - 1 >= 0 && this.balls[current[0]][current[1] - 1] === color) {
+            if (current[1] - 1 >= 0 && (this.balls[current[0]][current[1] - 1]-2)%4 === (color-2)%4) {
                 curmatches.push([current[0], current[1] - 1]);
             }
         }
 
+        if (clearall) {
+            for(var i=0; i<this.rows; i++) {
+                for (var j=0;j<this.cols; j++) {
+                    if ((this.balls[i][j]-2)%4 == (color-2)%4) {
+                        this.balls[i][j] = 1; // make it white
+                    }
+                }
+            }
+        }
+        
         return true;
     };
 
