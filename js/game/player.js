@@ -7,6 +7,9 @@ define(function(require) {
 
         this.keydown_delay = 0;
         this.keyheld = false;
+        this.heldblocks = [];
+
+        this.grabflag = 0;
     }
     Player.prototype = Object.create(Entity.prototype);
 
@@ -21,6 +24,20 @@ define(function(require) {
         if (kb.check(kb.LEFT)) {
             dx += this.engine.cols - 1;
         }
+        
+        if (kb.check(kb.D) && this.grabflag==0) {
+            this.grabflag = 16;
+            if (this.heldblocks.length == 0) {
+                this.heldblocks = this.engine.world.getBlocks(this.col);
+            } else {
+                this.engine.world.pushBlocks(this.heldblocks, this.col);
+                this.heldblocks = [];
+            }
+        } else {
+            if (this.grabflag>0)
+                this.grabflag--;
+        }
+        
 
         var keydown = kb.check(kb.LEFT) || kb.check(kb.RIGHT);
         if (this.keydown_delay <= 0) {
