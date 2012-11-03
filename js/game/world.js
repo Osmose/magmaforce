@@ -55,7 +55,6 @@ define(function(require) {
             if (this.balls[i][col] == 0) {
                 continue;
             }
-            console.log(this.balls[i][col]);
 
             if (lastGrabbed == 0 || lastGrabbed == this.balls[i][col]) {
                 lastGrabbed = this.balls[i][col];
