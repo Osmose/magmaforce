@@ -19,7 +19,7 @@ define(function(require) {
             dx += 1;
         }
         if (kb.check(kb.LEFT)) {
-            dx -= 1;
+            dx += this.engine.cols - 1;
         }
 
         var keydown = kb.check(kb.LEFT) || kb.check(kb.RIGHT);
