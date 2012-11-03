@@ -44,7 +44,12 @@ define(function(require) {
             }
         }
         this.balls.unshift(newRow);
-        this.balls.pop();
+        var lastrow = this.balls.pop();
+        for(var i=0;i<lastrow.length;i++) {
+            if (lastrow[i] != 0) {
+                this.gameOver = true;
+            }
+        }
     };
 
     BallWorld.prototype.getBlocks = function(col) {
