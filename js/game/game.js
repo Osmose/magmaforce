@@ -9,12 +9,13 @@ define(function(require) {
 
     var loader = require('game/loader');
     loader.register('balls','img/balls.png', 'image');
+    loader.register('player','img/player.png', 'image');
 
     loader.loadAll().done(function() {
         // Initialize engine.
         var COLS = 12;
         var ROWS = 12;
-        var engine = new Engine(COLS * 16, ROWS * 16, 3, new BallWorld(ROWS,COLS));
+        var engine = new Engine(COLS * 16, ROWS * 16+8, 3, new BallWorld(ROWS,COLS));
         engine.bg_color = '#000';
         engine.cols = COLS;
         engine.rows = ROWS;
