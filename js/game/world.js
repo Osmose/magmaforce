@@ -61,5 +61,51 @@ define(function(require) {
         }
     };
 
+    BallWorld.prototype.resolveColumn = function(col) {
+        var row = this.rows - 1;
+        while (row >= 0 && this.balls[row][col] === 0) {
+            row--;
+        }
+
+        if (row < 0) {
+            return;
+        }
+
+        var matches = [[row, col]];
+        var color = this.balls[row][col];
+        while (matches.length > 0) {
+            var current = matches.pop();
+            this.balls[current[0]][current[1]] = 0;
+
+            if (current[0] + 1 < this.rows && this.balls[current[0] + 1][current[1]] === color) {
+                matches.push([current[0] + 1, current[1]]);
+            }
+            if (current[0] - 1 >= 0 && this.balls[current[0] - 1][current[1]] === color) {
+                matches.push([current[0] - 1, current[1]]);
+            }
+            if (current[1] + 1 < this.cols && this.balls[current[0]][current[1] + 1] === color) {
+                matches.push([current[0], current[1] + 1]);
+            }
+            if (current[1] - 1 >= 0 && this.balls[current[0]][current[1] - 1] === color) {
+                matches.push([current[0], current[1] - 1]);
+            }
+        }
+    };
+
+    BallWorld.prototype.applyGravity = function(col) {
+        var lastFilled = -1;
+        for (var row = 0; row < this.rows; row++) {
+            if (this.balls[row][col]) {
+                if (lastFilled === row - 1) {
+                    lastFilled = row;
+                } else {
+                    lastFilled++;
+                    this.balls[lastFilled][col] = this.balls[row][col];
+                    this.balls[row][col] = 0;
+                }
+            }
+        }
+    };
+
     return BallWorld;
 });
