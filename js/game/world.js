@@ -7,6 +7,7 @@ define(function(require) {
         this.rows = rows-1;
         this.cols = cols;
 
+        this.gameOver = false;
         this.colors = ['empty','red','green','yellow','blue'];
 
         this.balls = [];
@@ -36,11 +37,52 @@ define(function(require) {
         this.balls.pop();
     };
 
+    BallWorld.prototype.getBlocks = function(col) {
+        var ret = [];
+        // From the bottom of the column, get all of the same color
+        var lastGrabbed = 0;
+        for(var i=this.rows-1; i>=0; i--) {
+            // Skip past empty rows
+            if (this.balls[i][col] == 0) {
+                continue;
+            }
+            console.log(this.balls[i][col]);
+
+            if (lastGrabbed == 0 || lastGrabbed == this.balls[i][col]) {
+                lastGrabbed = this.balls[i][col];
+                ret.push(lastGrabbed);
+                this.balls[i][col] = 0;
+            } else {
+                break;
+            }
+        }
+        return ret;
+    }
+
+    BallWorld.prototype.pushBlocks = function(blocks, col) {
+        // Find the bottom of the col
+        var bottomRow = 0;
+        for (var i=this.rows-1; i>=0; i--) {
+            if (this.balls[i][col] != 0)
+                break;
+            bottomRow = i;
+        }
+
+        for (var i=0;i<blocks.length; i++) {
+            if (bottomRow+i >= this.rows) {
+                console.log("you lost");
+                this.gameOver = true;
+                return;
+            }
+            this.balls[bottomRow+i][col] = blocks[i];
+        }
+    }
+
     BallWorld.prototype.tick = function() {
         DefaultWorld.prototype.tick.call(this);
 
         this.tickcount++;
-        if (this.tickcount > 120) {
+        if (this.tickcount > 120 && !this.gameOver) {
             this.generateRow();
             this.tickcount = 0;
         }
@@ -58,6 +100,12 @@ define(function(require) {
                     ctx.fillRect(j*8+1,i*8+1, 6, 6);
                 }
             }
+        }
+
+        // Draw gameover if they lost
+        if (this.gameOver) {
+            ctx.strokeStyle = "white";
+            ctx.strokeText("Game Over!", 20,20);
         }
     };
 
