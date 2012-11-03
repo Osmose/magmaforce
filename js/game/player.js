@@ -24,7 +24,7 @@ define(function(require) {
         if (kb.check(kb.LEFT)) {
             dx += this.engine.cols - 1;
         }
-        
+
         if (kb.check(kb.D) && this.grabflag==0) {
             this.grabflag = 16;
             if (this.heldblocks.length == 0) {
@@ -37,7 +37,7 @@ define(function(require) {
             if (this.grabflag>0)
                 this.grabflag--;
         }
-        
+
 
         var keydown = kb.check(kb.LEFT) || kb.check(kb.RIGHT);
         if (this.keydown_delay <= 0) {

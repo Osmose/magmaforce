@@ -19,6 +19,10 @@ define(function(require) {
         }
 
         this.tickcount = 0;
+
+        for (var k = 0; k < 3; k++) {
+            this.generateRow();
+        }
     }
 
     BallWorld.prototype = Object.create(DefaultWorld.prototype);
@@ -76,13 +80,18 @@ define(function(require) {
             }
             this.balls[bottomRow+i][col] = blocks[i];
         }
+
+        this.resolveColumn(col);
+        for (var k = 0; k < this.cols; k++) {
+            this.applyGravity(k);
+        }
     }
 
     BallWorld.prototype.tick = function() {
         DefaultWorld.prototype.tick.call(this);
 
         this.tickcount++;
-        if (this.tickcount > 120 && !this.gameOver) {
+        if (this.tickcount > 360 && !this.gameOver) {
             this.generateRow();
             this.tickcount = 0;
         }
@@ -115,12 +124,18 @@ define(function(require) {
             row--;
         }
 
-        if (row < 0) {
+        // Must be at least 3 in this column.
+        if (row < 2) {
+            return;
+        }
+
+        // Check for at least 3 of the same color.
+        var color = this.balls[row][col];
+        if (this.balls[row-1][col] != color || this.balls[row-2][col] != color) {
             return;
         }
 
         var matches = [[row, col]];
-        var color = this.balls[row][col];
         while (matches.length > 0) {
             var current = matches.pop();
             this.balls[current[0]][current[1]] = 0;
