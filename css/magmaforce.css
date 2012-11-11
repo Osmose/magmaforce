@@ -1,4 +1,5 @@
 #game canvas {
+    background: url('../img/bg_mine.png');
     display: block;
     margin: 10px auto;
 }

@@ -1,5 +1,6 @@
 define(function(require) {
     var DefaultWorld = require('flux/worlds/default');
+    var Graphic = require('flux/graphics/graphic');
     var TiledGraphic = require('flux/graphics/tiled');
 
     var loader = require('game/loader');
@@ -16,6 +17,7 @@ define(function(require) {
         this.colors = ['empty','white','red','green','yellow','blue','red-special','green-special','yellow-special','blue-special'];
 
         this.balltiles = new TiledGraphic(loader.get('balls'),16,16);
+        this.ground = new Graphic(loader.get('ground'), 16, 8);
         this.nonspecialrows = 0;
 
         this.balls = [];
@@ -185,6 +187,11 @@ define(function(require) {
     BallWorld.prototype.render = function(ctx) {
         // This will draw the player
         DefaultWorld.prototype.render.call(this, ctx);
+
+        // Draw the ground
+        for (var k = 0; k < this.rows + 1; k++) {
+            this.ground.render(ctx, k * 16, this.engine.height - 8);
+        }
 
         // Draw the grid of balls
         for (var i=0; i<this.rows; i++) {
