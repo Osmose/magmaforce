@@ -1,9 +1,11 @@
 define(function(require) {
     var DefaultWorld = require('flux/worlds/default');
     var Graphic = require('flux/graphics/graphic');
+    var Sound = require('flux/sound');
     var TiledGraphic = require('flux/graphics/tiled');
 
     var loader = require('game/loader');
+    loader.register('stage_music', 'audio/show_no_tears.ogg', 'audio');
 
     var SHOW_MATCH_LENGTH = 32;
 
@@ -35,6 +37,9 @@ define(function(require) {
         for (var k = 0; k < 3; k++) {
             this.generateRow();
         }
+
+        this.music = new Sound(loader.get('stage_music'));
+        this.running = false;
     }
 
     BallWorld.prototype = Object.create(DefaultWorld.prototype);
@@ -282,6 +287,16 @@ define(function(require) {
 
         return affected;
     };
+
+    BallWorld.prototype.start = function() {
+        if (this.running) {
+            this.music.loop();
+        }
+    };
+
+    BallWorld.prototype.stop = function() {
+        this.music.pause();
+    }
 
     return BallWorld;
 });

@@ -5,7 +5,7 @@ define(function(require) {
     var loader = require('game/loader');
     function Player(x, y) {
         Entity.call(this, x, y);
-        this.col = 0;
+        this.col = 6;
         
         this.playertiles = new TiledGraphic(loader.get('player'),16,24);
         this.currentSprite = 0;
@@ -34,11 +34,11 @@ define(function(require) {
         if (kb.check(kb.D) && !this.grabkey) {
             this.grabkey = true;
             if (this.heldblocks.length === 0) {
-                var addblocks = this.engine.world.getBlocks(this.col);
+                var addblocks = this.world.getBlocks(this.col);
                 this.heldblocks = this.heldblocks.concat(addblocks);
             } else {
                 // Let them pick up more of the same color if they want
-                var addblocks = this.engine.world.getBlocks(this.col, this.heldblocks[0]);
+                var addblocks = this.world.getBlocks(this.col, this.heldblocks[0]);
                 this.heldblocks = this.heldblocks.concat(addblocks);
             }
         }
@@ -55,16 +55,13 @@ define(function(require) {
         if (kb.check(kb.F) && !this.throwkey) {
             this.throwkey = true;
             if (this.heldblocks.length > 0) {
-                this.engine.world.pushBlocks(this.heldblocks, this.col);
+                this.world.pushBlocks(this.heldblocks, this.col);
                 this.heldblocks = [];
             }
         }
         if (!kb.check(kb.F)) {
             this.throwkey = false;
         }
-
-
-
 
         var keydown = kb.check(kb.LEFT) || kb.check(kb.RIGHT);
         if (this.keydown_delay <= 0) {
@@ -93,7 +90,7 @@ define(function(require) {
 
         this.playertiles.renderTile(ctx, this.currentSprite, this.x, this.y);
 
-        var world = this.engine.world;
+        var world = this.world;
         var x = this.x + 7;
 
         for (var row = this.engine.rows - 2; row >= 0; row--) {

@@ -6,6 +6,7 @@ define(function(require) {
 
     var Player = require('game/player');
     var BallWorld = require('game/world');
+    var WarningWorld = require('game/warning');
 
     var loader = require('game/loader');
     loader.register('balls','img/balls.png', 'image');
@@ -73,15 +74,16 @@ define(function(require) {
         this.bg_color = this.bg_gradients[this.gradient_indexes[this.gradient_count++ % this.gradient_indexes.length]];
     }
 
-
     loader.loadAll().done(function() {
         // Initialize engine.
         var COLS = 12;
         var ROWS = 12;
-        var engine = new MagmaEngine(COLS * 16, ROWS * 16+16, 3, new BallWorld(ROWS,COLS));
+        var ballworld = new BallWorld(ROWS,COLS);
+        var engine = new MagmaEngine(COLS * 16, ROWS * 16+16, 3, ballworld);
         engine.cols = COLS;
         engine.rows = ROWS;
-        engine.addEntity(new Player(0, 11 * 16));
+        ballworld.addEntity(new Player(6 * 16, 11 * 16));
+        engine.pushWorld(new WarningWorld(ballworld), true, false);
 
         // Append canvas to screen and start the engine!
         document.querySelector('#game').appendChild(engine.canvas);
