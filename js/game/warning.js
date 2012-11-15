@@ -17,11 +17,12 @@ define(function(require) {
         var self = this;
 
         this.ballworld = ballworld;
-        
+
         this.warning = new Graphic(loader.get('warning'));
         this.warning_stripe = new Graphic(loader.get('warning_stripe'));
 
         this.alarm = new Sound(loader.get('warning_sound'));
+        this.alarm.audio.volume = 0.5;
         this.alarm.audio.addEventListener('ended', function(e) {
             self.state = 2;
             self.alarm_playing = false;

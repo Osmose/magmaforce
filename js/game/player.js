@@ -10,7 +10,7 @@ define(function(require) {
     function Player(x, y) {
         Entity.call(this, x, y);
         this.col = 6;
-        
+
         this.playertiles = new TiledGraphic(loader.get('player'),16,24);
         this.currentSprite = 0;
 
@@ -24,8 +24,8 @@ define(function(require) {
         this.get_blocks_sound = new Sound(loader.get('get_blocks'));
         this.push_blocks_sound = new Sound(loader.get('push_blocks'));
 
-        this.get_blocks_sound.audio.volume = 0.05;
-        this.push_blocks_sound.audio.volume = 0.05;
+        this.get_blocks_sound.audio.volume = 0.1;
+        this.push_blocks_sound.audio.volume = 0.1;
     }
     Player.prototype = Object.create(Entity.prototype);
 

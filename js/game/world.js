@@ -40,11 +40,11 @@ define(function(require) {
         }
 
         this.music = new Sound(loader.get('stage_music'));
-        this.music.audio.volume = 0.04; // wtf I hate volume control
+        this.music.audio.volume = 0.1; // wtf I hate volume control
         this.running = false;
 
         this.ball_sound = new Sound(loader.get('ball_sound'));
-        this.ball_sound.audio.volume = 0.06;
+        this.ball_sound.audio.volume = 0.1;
         this.play_ball_sound = false;
     }
 
@@ -279,7 +279,7 @@ define(function(require) {
                 }
             }
         }
-        
+
         return true;
     };
 
