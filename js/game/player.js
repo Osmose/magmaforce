@@ -1,8 +1,12 @@
 define(function(require) {
     var Entity = require('flux/entity');
+    var Sound = require('flux/sound');
     var TiledGraphic = require('flux/graphics/tiled');
 
     var loader = require('game/loader');
+    loader.register('get_blocks', 'audio/get_blocks.ogg', 'audio');
+    loader.register('push_blocks', 'audio/push_blocks.ogg', 'audio');
+
     function Player(x, y) {
         Entity.call(this, x, y);
         this.col = 6;
@@ -16,6 +20,12 @@ define(function(require) {
 
         this.grabkey = true;
         this.throwkey = true;
+
+        this.get_blocks_sound = new Sound(loader.get('get_blocks'));
+        this.push_blocks_sound = new Sound(loader.get('push_blocks'));
+
+        this.get_blocks_sound.audio.volume = 0.05;
+        this.push_blocks_sound.audio.volume = 0.05;
     }
     Player.prototype = Object.create(Entity.prototype);
 
@@ -33,13 +43,19 @@ define(function(require) {
 
         if (kb.check(kb.D) && !this.grabkey) {
             this.grabkey = true;
+            var addblocks;
             if (this.heldblocks.length === 0) {
-                var addblocks = this.world.getBlocks(this.col);
+                addblocks = this.world.getBlocks(this.col);
                 this.heldblocks = this.heldblocks.concat(addblocks);
             } else {
                 // Let them pick up more of the same color if they want
-                var addblocks = this.world.getBlocks(this.col, this.heldblocks[0]);
+                addblocks = this.world.getBlocks(this.col, this.heldblocks[0]);
                 this.heldblocks = this.heldblocks.concat(addblocks);
+            }
+
+            if (addblocks.length > 0) {
+                this.get_blocks_sound.stop();
+                this.get_blocks_sound.play();
             }
         }
         if (!kb.check(kb.D)){
@@ -57,6 +73,9 @@ define(function(require) {
             if (this.heldblocks.length > 0) {
                 this.world.pushBlocks(this.heldblocks, this.col);
                 this.heldblocks = [];
+
+                this.push_blocks_sound.stop();
+                this.push_blocks_sound.play();
             }
         }
         if (!kb.check(kb.F)) {

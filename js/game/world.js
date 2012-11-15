@@ -6,6 +6,7 @@ define(function(require) {
 
     var loader = require('game/loader');
     loader.register('stage_music', 'audio/show_no_tears.ogg', 'audio');
+    loader.register('ball_sound', 'audio/st2_die.ogg', 'audio');
 
     var SHOW_MATCH_LENGTH = 32;
 
@@ -39,7 +40,12 @@ define(function(require) {
         }
 
         this.music = new Sound(loader.get('stage_music'));
+        this.music.audio.volume = 0.04; // wtf I hate volume control
         this.running = false;
+
+        this.ball_sound = new Sound(loader.get('ball_sound'));
+        this.ball_sound.audio.volume = 0.06;
+        this.play_ball_sound = false;
     }
 
     BallWorld.prototype = Object.create(DefaultWorld.prototype);
@@ -137,6 +143,7 @@ define(function(require) {
         var matches = this.resolveColumn(col);
         if (matches) {
             this.show_match_count = SHOW_MATCH_LENGTH;
+            this.play_ball_sound = true;
         }
 
         this.checkGameOver();
@@ -167,6 +174,7 @@ define(function(require) {
                     if (affected[k]) {
                         if (this.resolveColumn(k)) {
                             this.show_match_count = SHOW_MATCH_LENGTH;
+                            this.play_ball_sound = true;
                         }
                     }
                 }
@@ -186,6 +194,12 @@ define(function(require) {
             if (ballcount < 2.5*this.cols) {
                 this.generateRow();
             }
+        }
+
+        if (this.play_ball_sound) {
+            this.play_ball_sound = false;
+            this.ball_sound.stop();
+            this.ball_sound.play();
         }
     };
 
