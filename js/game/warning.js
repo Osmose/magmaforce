@@ -17,7 +17,7 @@ define(function(require) {
         var self = this;
 
         this.ballworld = ballworld;
-        
+
         this.warning = new Graphic(loader.get('warning'));
         this.warning_stripe = new Graphic(loader.get('warning_stripe'));
 
@@ -63,6 +63,9 @@ define(function(require) {
                     this.engine.popWorld();
                     this.ballworld.running = true;
                     this.ballworld.start();
+                    this.ballworld.ballgrid.addRow(true);
+                    this.ballworld.ballgrid.addRow(true);
+                    this.ballworld.ballgrid.addRow(true);
                 }
         }
     };

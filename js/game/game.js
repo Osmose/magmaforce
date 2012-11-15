@@ -9,7 +9,6 @@ define(function(require) {
     var WarningWorld = require('game/warning');
 
     var loader = require('game/loader');
-    loader.register('balls','img/balls.png', 'image');
     loader.register('player','img/player.png', 'image');
     loader.register('ground','img/ground.png', 'image');
 

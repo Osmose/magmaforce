@@ -7,16 +7,17 @@ define(function(require) {
     loader.register('get_blocks', 'audio/get_blocks.ogg', 'audio');
     loader.register('push_blocks', 'audio/push_blocks.ogg', 'audio');
 
+    var Ball = require('game/ball');
+
     function Player(x, y) {
         Entity.call(this, x, y);
         this.col = 6;
-        
+
         this.playertiles = new TiledGraphic(loader.get('player'),16,24);
         this.currentSprite = 0;
 
         this.keydown_delay = 0;
         this.keyheld = false;
-        this.heldblocks = [];
 
         this.grabkey = true;
         this.throwkey = true;
@@ -41,44 +42,20 @@ define(function(require) {
             dx += this.engine.cols - 1;
         }
 
-        if (kb.check(kb.D) && !this.grabkey) {
-            this.grabkey = true;
-            var addblocks;
-            if (this.heldblocks.length === 0) {
-                addblocks = this.world.getBlocks(this.col);
-                this.heldblocks = this.heldblocks.concat(addblocks);
-            } else {
-                // Let them pick up more of the same color if they want
-                addblocks = this.world.getBlocks(this.col, this.heldblocks[0]);
-                this.heldblocks = this.heldblocks.concat(addblocks);
+        if (kb.check(kb.D)) {
+            if (!this.grabkey) {
+                this.grabkey = true;
+                var addblocks;
             }
-
-            if (addblocks.length > 0) {
-                this.get_blocks_sound.stop();
-                this.get_blocks_sound.play();
-            }
-        }
-        if (!kb.check(kb.D)){
+        } else {
             this.grabkey = false;
         }
 
-        if (this.heldblocks.length > 0) {
-            this.currentSprite = (this.heldblocks[0]-2)%4+1;
-        } else {
-            this.currentSprite = 0;
-        }
-
-        if (kb.check(kb.F) && !this.throwkey) {
-            this.throwkey = true;
-            if (this.heldblocks.length > 0) {
-                this.world.pushBlocks(this.heldblocks, this.col);
-                this.heldblocks = [];
-
-                this.push_blocks_sound.stop();
-                this.push_blocks_sound.play();
+        if (kb.check(kb.F)) {
+            if (!this.throwkey) {
+                this.throwkey = true;
             }
-        }
-        if (!kb.check(kb.F)) {
+        } else {
             this.throwkey = false;
         }
 
@@ -109,11 +86,10 @@ define(function(require) {
 
         this.playertiles.renderTile(ctx, this.currentSprite, this.x, this.y);
 
-        var world = this.world;
+        var grid = this.world.ballgrid.grid;
         var x = this.x + 7;
-
-        for (var row = this.engine.rows - 2; row >= 0; row--) {
-            if (world.balls[row][this.col] !== 0) break;
+        for (var row = grid.length - 2; row >= 0; row--) {
+            if (grid[row][this.col] !== Ball.EMPTY) break;
 
             var y = row * 16;
             ctx.fillRect(this.x + 7, y + 3, 2, 2);
